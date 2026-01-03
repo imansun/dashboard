@@ -1,0 +1,14 @@
+{
+  "nav": {
+    "dashboards": {
+      "dashboards": "داشبوردها",
+      "home": "خانه"
+    },
+    "settings": {
+      "settings": "تنظیمات",
+      "general": "عمومی",
+      "appearance": "ظاهر"
+    }
+  }
+}
+

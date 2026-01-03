@@ -1,0 +1,52 @@
+// src\styles\global.scss
+body {
+    font-feature-settings: "ss01" !important;
+}
+
+.apexcharts-tooltip .apexcharts-tooltip-y-group {
+    font-family: 'Kook' !important;
+}
+
+.apexcharts-tooltip-series-group {
+    direction: rtl !important;
+}
+
+.apexcharts-tooltip-marker {
+    margin-left: 4px !important;
+}
+
+.apexcharts-text {
+    font-family: 'Kook', sans-serif !important;
+}
+.apexcharts-tooltip {
+    font-family: 'Kook', sans-serif !important;
+    text-align: right !important;
+}
+.apexcharts-legend-text {
+    font-family: 'Kook', sans-serif !important;
+}
+
+.flatpickr-calendar {
+    direction: rtl;
+}
+
+.ql-editor {
+    direction: rtl;
+    text-align: right;
+    font-family: 'Kook', sans-serif;
+}
+
+.apexcharts-xaxis-label-rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+.ql-picker{
+    font-family: 'Kook', sans-serif !important;   
+}
+
+.filepond--root{
+    font-family: 'Kook', sans-serif !important;   
+}
+
+

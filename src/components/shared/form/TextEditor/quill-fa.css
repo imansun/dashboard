@@ -1,0 +1,92 @@
+/* src\components\shared\form\TextEditor\quill-fa.css */
+/* =========================================================
+   Heading ها
+========================================================= */
+.ql-picker.ql-header .ql-picker-label[data-value=""]::before,
+.ql-picker.ql-header .ql-picker-item[data-value=""]::before,
+.ql-picker.ql-header .ql-picker-label:not([data-value])::before,
+.ql-picker.ql-header .ql-picker-item:not([data-value])::before {
+  content: "متن معمولی" !important;
+}
+.ql-picker.ql-header .ql-picker-item[data-value="1"]:before,
+.ql-picker.ql-header .ql-picker-label[data-value="1"]:before {
+  content: "تیتر ۱" !important;
+}
+.ql-picker.ql-header .ql-picker-item[data-value="2"]:before,
+.ql-picker.ql-header .ql-picker-label[data-value="2"]:before {
+  content: "تیتر ۲" !important;
+}
+.ql-picker.ql-header .ql-picker-item[data-value="3"]:before,
+.ql-picker.ql-header .ql-picker-label[data-value="3"]:before {
+  content: "تیتر ۳" !important;
+}
+
+.ql-picker.ql-header .ql-picker-item[data-value="4"]:before,
+.ql-picker.ql-header .ql-picker-label[data-value="4"]:before {
+  content: "تیتر ۴" !important;
+}
+.ql-picker.ql-header .ql-picker-item[data-value="5"]:before,
+.ql-picker.ql-header .ql-picker-label[data-value="5"]:before {
+  content: "تیتر ۵" !important;
+}
+.ql-picker.ql-header .ql-picker-item[data-value="6"]:before,
+.ql-picker.ql-header .ql-picker-label[data-value="6"]:before {
+  content: "تیتر ۶" !important;
+}
+/* =========================================================
+   سایز متن
+========================================================= */
+.ql-picker.ql-size .ql-picker-item[data-value="small"]:before,
+.ql-picker.ql-size .ql-picker-label[data-value="small"]:before {
+  content: "کوچک" !important;
+}
+.ql-picker.ql-size .ql-picker-label[data-value=""]::before,
+.ql-picker.ql-size .ql-picker-item[data-value=""]::before,
+.ql-picker.ql-size .ql-picker-label:not([data-value])::before,
+.ql-picker.ql-size .ql-picker-item:not([data-value])::before {
+  content: "معمولی" !important;
+}
+.ql-picker.ql-size .ql-picker-item[data-value="large"]:before,
+.ql-picker.ql-size .ql-picker-label[data-value="large"]:before {
+  content: "بزرگ" !important;
+}
+.ql-picker.ql-size .ql-picker-item[data-value="huge"]:before,
+.ql-picker.ql-size .ql-picker-label[data-value="huge"]:before {
+  content: "خیلی بزرگ" !important;
+}
+
+/* =========================================================
+   فونت‌ها
+========================================================= */
+/* متن پیش‌فرض Font */
+.ql-picker.ql-font .ql-picker-label[data-value=""]::before,
+.ql-picker.ql-font .ql-picker-item[data-value=""]::before,
+.ql-picker.ql-font .ql-picker-label:not([data-value])::before,
+.ql-picker.ql-font .ql-picker-item:not([data-value])::before {
+  content: "بدون‌سریف" !important;
+}
+
+/* بقیه گزینه‌ها */
+.ql-picker.ql-font .ql-picker-item[data-value="sans"]:before,
+.ql-picker.ql-font .ql-picker-label[data-value="sans"]:before {
+  content: "بدون‌سریف" !important;
+}
+.ql-picker.ql-font .ql-picker-item[data-value="serif"]:before,
+.ql-picker.ql-font .ql-picker-label[data-value="serif"]:before {
+  content: "سریف" !important;
+}
+.ql-picker.ql-font .ql-picker-item[data-value="monospace"]:before,
+.ql-picker.ql-font .ql-picker-label[data-value="monospace"]:before {
+  content: "تک‌فاصله" !important;
+}
+
+
+
+/* =========================================================
+   Tooltip لینک
+========================================================= */
+.ql-tooltip[data-mode="link"]::before {
+  content: "آدرس لینک را وارد کنید..." !important;
+}
+.ql-tooltip a.ql-action::after { content: "ذخیره" !important; }
+.ql-tooltip a.ql-remove::after { content: "حذف" !important; }

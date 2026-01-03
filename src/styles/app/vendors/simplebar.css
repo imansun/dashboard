@@ -1,0 +1,12 @@
+/* src\styles\app\vendors\simplebar.css */
+.simplebar-scrollbar:before {
+  @apply bg-gray-300/80!;
+}
+
+.dark .simplebar-scrollbar:before {
+  @apply bg-dark-400!;
+}
+
+.simplebar-content-wrapper {
+  @apply outline-hidden;
+}
