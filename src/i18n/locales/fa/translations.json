@@ -7,8 +7,25 @@
     "settings": {
       "settings": "تنظیمات",
       "general": "عمومی",
-      "appearance": "ظاهر"
+      "appearance": "ظاهر",
+      "rbac": "مدیریت نقش‌ها (RBAC)"
+    },
+    "support": {
+      "support": "تیکت ساپورت",
+      "tickets": "لیست تیکت‌ها",
+      "users": "کاربران",
+      "companies": "شرکت‌ها",
+      "branches": "شعبه‌ها",
+      "categories": "دسته‌بندی‌ها",
+      "sla_policies": "SLA Policies"
+    },
+    "apps": {
+      "apps": "اپلیکیشن‌ها",
+      "filemanager": "مدیریت فایل"
+    },
+    "documents": {
+      "documents": "اسناد",
+      "archive": "آرشیو / DMS"
     }
   }
 }
-

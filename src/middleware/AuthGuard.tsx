@@ -15,9 +15,11 @@ export default function AuthGuard() {
   const location = useLocation();
 
   if (!isAuthenticated) {
+    const backTo = encodeURIComponent(location.pathname + location.search);
+
     return (
       <Navigate
-        to={`${GHOST_ENTRY_PATH}?${REDIRECT_URL_KEY}=${location.pathname}`}
+        to={`${GHOST_ENTRY_PATH}?${REDIRECT_URL_KEY}=${backTo}`}
         replace
       />
     );

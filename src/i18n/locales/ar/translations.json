@@ -1,4 +1,3 @@
-
 {
   "nav": {
     "dashboards": {
@@ -8,8 +7,25 @@
     "settings": {
       "settings": "الإعدادات",
       "general": "عام",
-      "appearance": "المظهر"
+      "appearance": "المظهر",
+      "rbac": "إدارة الأدوار (RBAC)"
+    },
+    "support": {
+      "support": "الدعم",
+      "tickets": "التذاكر",
+      "users": "المستخدمون",
+      "companies": "الشركات",
+      "branches": "الفروع",
+      "categories": "الفئات",
+      "sla_policies": "SLA Policies"
+    },
+    "apps": {
+      "apps": "التطبيقات",
+      "filemanager": "مدير الملفات"
+    },
+    "documents": {
+      "documents": "المستندات",
+      "archive": "الأرشيف / DMS"
     }
   }
 }
-

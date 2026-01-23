@@ -1,4 +1,4 @@
-// src\app\navigation\segments\settings.ts
+// src/app/navigation/segments/settings.ts
 import { NavigationTree } from "@/@types/navigation";
 
 export const settings: NavigationTree = {
@@ -24,6 +24,26 @@ export const settings: NavigationTree = {
       title: "Appearance",
       transKey: "nav.settings.appearance",
       icon: "settings.appearance",
+    },
+
+    // ✅ Users
+    {
+      id: "settings.users",
+      type: "item",
+      path: "/settings/users",
+      title: "Users",
+      transKey: "nav.settings.users",
+      icon: "settings.users",
+    },
+
+    // ✅ NEW: RBAC
+    {
+      id: "settings.rbac",
+      type: "item",
+      path: "/settings/rbac",
+      title: "RBAC",
+      transKey: "nav.settings.rbac",
+      icon: "settings.rbac",
     },
   ],
 };

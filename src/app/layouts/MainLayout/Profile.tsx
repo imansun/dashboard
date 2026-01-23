@@ -12,11 +12,12 @@ import {
   Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
 import { TbCoins, TbUser, TbUsersGroup } from "react-icons/tb";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 // Local Imports
 import { Avatar, AvatarDot, Button } from "@/components/ui";
-import { ColorType } from "@/constants/app";
+import { ColorType, GHOST_ENTRY_PATH } from "@/constants/app";
+import { useAuthContext } from "@/app/contexts/auth/context";
 
 // Define Link Types
 interface LinkItem {
@@ -74,6 +75,9 @@ const links: LinkItem[] = [
 // ----------------------------------------------------------------------
 
 export function Profile() {
+  const navigate = useNavigate();
+  const { logout, isLoading, user } = useAuthContext();
+
   return (
     <Popover className="relative">
       <PopoverButton
@@ -86,7 +90,6 @@ export function Profile() {
           <AvatarDot color="success" className="ltr:right-0 rtl:left-0" />
         }
         className="cursor-pointer"
-
       />
       <Transition
         enter="duration-200 ease-out"
@@ -104,20 +107,18 @@ export function Profile() {
             <>
               {/* User Info */}
               <div className="flex items-center gap-4 rounded-t-lg bg-gray-100 px-4 py-5 dark:bg-dark-800">
-                <Avatar
-                  size={14}
-                  src="/images/avatar/avatar-12.jpg"
-                  alt="Profile"
-                />
+                <Avatar size={14} src="/images/avatar/avatar-12.jpg" alt="Profile" />
                 <div>
                   <Link
                     className="text-base font-medium text-gray-700 hover:text-primary-600 focus:text-primary-600 dark:text-dark-100 dark:hover:text-primary-400 dark:focus:text-primary-400"
                     to="/settings/general"
+                    onClick={() => close()}
                   >
-                   امیرحسین فدایی
+                    {user?.email || "کاربر"}
                   </Link>
                   <p className="mt-0.5 text-xs text-gray-400 dark:text-dark-300">
-                    طراح محصول
+                    {/* اگر title/role واقعی داری اینجا جایگزین کن */}
+                    {user?.role ? user.role : " "}
                   </p>
                 </div>
               </div>
@@ -151,9 +152,24 @@ export function Profile() {
 
                 {/* Logout Button */}
                 <div className="px-4 pt-4">
-                  <Button className="w-full gap-2">
+                  <Button
+                    className="w-full gap-2"
+                    disabled={isLoading}
+                    onClick={async () => {
+                      // اول منو بسته شود
+                      close();
+
+                      try {
+                        // logout-all (invalidate refresh tokens)
+                        await logout();
+                      } finally {
+                        // به صفحه لاگین برو
+                        navigate(GHOST_ENTRY_PATH, { replace: true });
+                      }
+                    }}
+                  >
                     <ArrowLeftStartOnRectangleIcon className="size-4.5" />
-                    <span>خروج</span>
+                    <span>{isLoading ? "در حال خروج..." : "خروج"}</span>
                   </Button>
                 </div>
               </div>

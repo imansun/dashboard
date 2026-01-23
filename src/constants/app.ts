@@ -1,6 +1,6 @@
 // src\constants\app.ts
-export const APP_NAME = "Tailux";
-export const APP_KEY = "tailux";
+export const APP_NAME = "مقصود کمپانی";
+export const APP_KEY = "مقصود کمپانی";
 
 // Redirect Paths
 export const REDIRECT_URL_KEY = "redirect";

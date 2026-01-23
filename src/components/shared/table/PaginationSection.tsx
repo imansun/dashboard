@@ -14,13 +14,37 @@ import { useBreakpointsContext } from "@/app/contexts/breakpoint/context";
 
 // ----------------------------------------------------------------------
 
-export function PaginationSection({ table }: { table: Table<any> }) {
+export function PaginationSection({
+  table,
+  total,
+}: {
+  table: Table<any>;
+  total?: number; // ✅ برای pagination سرور-ساید (مثل users list) عدد total رو پاس بده
+}) {
   const paginationState = table.getState().pagination;
   const { isXl, is2xl } = useBreakpointsContext();
 
+  const pageIndex = paginationState.pageIndex;
+  const pageSize = paginationState.pageSize;
+
+  const currentRowsCount = table.getRowModel().rows.length;
+
+  const start =
+    currentRowsCount === 0 ? 0 : pageIndex * pageSize + 1;
+
+  const end =
+    currentRowsCount === 0
+      ? 0
+      : total != null
+        ? Math.min((pageIndex + 1) * pageSize, total)
+        : pageIndex * pageSize + currentRowsCount;
+
+  const totalCount =
+    total != null ? total : table.getCoreRowModel().rows.length;
+
   return (
     <div className="flex flex-col justify-between space-y-4 sm:flex-row sm:items-center sm:space-y-0">
-      <div className="text-xs-plus flex items-center space-x-2">
+      <div className="text-xs-plus flex items-center space-x-2 rtl:space-x-reverse">
         <span>نمایش</span>
         <Select
           data={[10, 20, 30, 40, 50, 100]}
@@ -35,6 +59,7 @@ export function PaginationSection({ table }: { table: Table<any> }) {
         />
         <span>ورودی</span>
       </div>
+
       <div>
         <Pagination
           total={table.getPageCount()}
@@ -48,10 +73,9 @@ export function PaginationSection({ table }: { table: Table<any> }) {
           <PaginationNext />
         </Pagination>
       </div>
+
       <div className="text-xs-plus truncate">
-        {paginationState.pageIndex * paginationState.pageSize + 1} -{" "}
-        {table.getRowModel().rows.length} از{" "}
-        {table.getCoreRowModel().rows.length} ورودی
+        {start} - {end} از {totalCount} ورودی
       </div>
     </div>
   );

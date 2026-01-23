@@ -7,8 +7,25 @@
     "settings": {
       "settings": "Settings",
       "general": "General",
-      "appearance": "Appearance"
+      "appearance": "Appearance",
+      "rbac": "RBAC"
+    },
+    "support": {
+      "support": "Support",
+      "tickets": "Tickets",
+      "users": "Users",
+      "companies": "Companies",
+      "branches": "Branches",
+      "categories": "Categories",
+      "sla_policies": "SLA Policies"
+    },
+    "apps": {
+      "apps": "Apps",
+      "filemanager": "File Manager"
+    },
+    "documents": {
+      "documents": "Documents",
+      "archive": "Archive / DMS"
     }
   }
 }
-

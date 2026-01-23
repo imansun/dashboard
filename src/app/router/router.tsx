@@ -1,4 +1,4 @@
-// src\app\router\public.tsx
+// src\app\router\router.tsx
 // Import Dependencies
 import { createBrowserRouter, RouteObject } from "react-router";
 

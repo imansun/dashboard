@@ -1,4 +1,4 @@
-// src\app\router\protected.tsx
+// src/app/router/protected.tsx
 import { Navigate, RouteObject } from "react-router";
 
 import AuthGuard from "@/middleware/AuthGuard";
@@ -32,7 +32,79 @@ const protectedRoutes: RouteObject = {
             {
               path: "home",
               lazy: async () => ({
-                Component: (await import("@/app/pages/dashboards/home"))
+                Component: (await import("@/app/pages/dashboards/home")).default,
+              }),
+            },
+          ],
+        },
+
+        // ✅ Support
+        {
+          path: "support",
+          children: [
+            { index: true, element: <Navigate to="/support/tickets" /> },
+            {
+              path: "tickets",
+              lazy: async () => ({
+                Component: (await import("@/app/pages/support/tickets")).default,
+              }),
+            },
+
+            // ✅ NEW: tickets/new
+            {
+              path: "tickets/new",
+              lazy: async () => ({
+                Component: (await import("@/app/pages/support/tickets/new"))
+                  .default,
+              }),
+            },
+
+            // ✅ NEW: tickets/:id
+            {
+              path: "tickets/:id",
+              lazy: async () => ({
+                Component: (await import("@/app/pages/support/tickets/detail"))
+                  .default,
+              }),
+            },
+
+            // ✅ users
+            {
+              path: "users",
+              lazy: async () => ({
+                Component: (await import("@/app/pages/support/users")).default,
+              }),
+            },
+
+            // ✅ NEW: companies
+            {
+              path: "companies",
+              lazy: async () => ({
+                Component: (await import("@/app/pages/support/companies")).default,
+              }),
+            },
+
+            // ✅ NEW: branches (REQUIRED)
+            {
+              path: "branches",
+              lazy: async () => ({
+                Component: (await import("@/app/pages/support/branches")).default,
+              }),
+            },
+
+            // ✅ NEW: categories (REQUIRED)
+            {
+              path: "categories",
+              lazy: async () => ({
+                Component: (await import("@/app/pages/support/categories")).default,
+              }),
+            },
+
+            // ✅ NEW: sla-policies (REQUIRED)
+            {
+              path: "sla-policies",
+              lazy: async () => ({
+                Component: (await import("@/app/pages/support/sla-policies"))
                   .default,
               }),
             },
@@ -40,6 +112,7 @@ const protectedRoutes: RouteObject = {
         },
       ],
     },
+
     // The app layout supports only the main layout. Avoid using it for other layouts.
     {
       Component: AppLayout,
@@ -50,10 +123,7 @@ const protectedRoutes: RouteObject = {
             Component: (await import("@/app/pages/settings/Layout")).default,
           }),
           children: [
-            {
-              index: true,
-              element: <Navigate to="/settings/general" />,
-            },
+            { index: true, element: <Navigate to="/settings/general" /> },
             {
               path: "general",
               lazy: async () => ({
@@ -68,6 +138,23 @@ const protectedRoutes: RouteObject = {
                 Component: (
                   await import("@/app/pages/settings/sections/Appearance")
                 ).default,
+              }),
+            },
+            // ✅ added
+            {
+              path: "users",
+              lazy: async () => ({
+                Component: (await import("@/app/pages/settings/sections/Users"))
+                  .default,
+              }),
+            },
+
+            // ✅ NEW: rbac
+            {
+              path: "rbac",
+              lazy: async () => ({
+                Component: (await import("@/app/pages/settings/sections/Rbac"))
+                  .default,
               }),
             },
           ],

@@ -150,7 +150,9 @@ function Confirm({
   onClose,
   focusRef,
 }: ConfirmProps & { focusRef: React.RefObject<HTMLButtonElement | null> }) {
-  const mergedMessages = merge(defaultMessages, messages);
+  // ✅ FIX: avoid mutating defaultMessages
+  const mergedMessages = merge({}, defaultMessages, messages);
+
   const Icon = mergedMessages[state].Icon;
   const spinner = <GhostSpinner variant="soft" className="size-4 border-2" />;
 
