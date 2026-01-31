@@ -27,5 +27,71 @@
       "documents": "Documents",
       "archive": "Archive / DMS"
     }
+  },
+  "support": {
+    "tickets": {
+      "detail": {
+        "title": "Ticket",
+        "back": "Back",
+        "refresh": "Refresh",
+        "resolve": "Resolve",
+        "close": "Close Ticket",
+        "reopen": "Reopen",
+        "loading": "Loading...",
+        "not_found": "Ticket not found",
+        "fields": {
+          "company": "Company",
+          "branch": "Branch",
+          "category": "Category",
+          "requester": "Requester",
+          "responder": "Responder",
+          "description": "Description"
+        },
+        "status": {
+          "OPEN": "Open",
+          "IN_PROGRESS": "In progress",
+          "RESOLVED": "Resolved",
+          "CLOSED": "Closed"
+        },
+        "confirm": {
+          "resolve": {
+            "pending": "Mark ticket as resolved?",
+            "success": "Ticket resolved"
+          },
+          "close": {
+            "pending": "Close the ticket?",
+            "success": "Ticket closed"
+          },
+          "reopen": {
+            "pending": "Reopen the ticket?",
+            "success": "Ticket reopened"
+          }
+        },
+        "messages": {
+          "title": "Messages",
+          "new_message": "New message",
+          "placeholder": "Message text...",
+          "send": "Send",
+          "sent": "Message sent",
+          "empty": "No messages."
+        },
+        "link_doc": {
+          "title": "Link document",
+          "company_id_optional": "Company ID (optional)",
+          "branch_id_optional": "Branch ID (optional)",
+          "document_id": "Document ID",
+          "version_id_optional": "Version ID (optional)",
+          "required_document_id": "Document ID is required",
+          "success": "Document linked successfully",
+          "error": "Error linking document",
+          "button": "Link"
+        },
+        "actions": {
+          "done": "Done",
+          "error": "Operation failed",
+          "detail_error": "Failed to fetch ticket details"
+        }
+      }
+    }
   }
 }

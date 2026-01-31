@@ -1,3 +1,4 @@
+// src\app\services\companies\companies.types.ts
 export type UUID = string;
 
 export interface Company {

@@ -10,6 +10,9 @@ import {
   MapPinIcon, // ✅ NEW
   TagIcon, // ✅ NEW
   ClockIcon, // ✅ NEW
+  FolderIcon, // ✅ NEW (documents)
+  ArchiveBoxIcon, // ✅ NEW (documents.archive + archive)
+  ShieldCheckIcon, // ✅ NEW (settings.rbac)
 } from "@heroicons/react/24/outline";
 import { ElementType } from "react";
 
@@ -29,6 +32,7 @@ export const navigationIcons: Record<string, ElementType> = {
 
   // ✅ users
   "settings.users": UsersIcon,
+  "settings.rbac": ShieldCheckIcon, // ✅ FIX
 
   // support
   support: ChatBubbleLeftRightIcon,
@@ -46,4 +50,13 @@ export const navigationIcons: Record<string, ElementType> = {
   "support.branches": BuildingOffice2Icon,
   "support.categories": TbPalette,
   "support.sla-policies": ChatBubbleLeftRightIcon,
+
+  // ✅ Archive (FIX invariant crash)
+  archive: ArchiveBoxIcon,
+  "archive.list": ArchiveBoxIcon,
+
+  // ✅ Documents (IMPORTANT: prevent invariant crash)
+  documents: FolderIcon,
+  "documents.archive": ArchiveBoxIcon,
+  "documents.dms": FolderIcon,
 };

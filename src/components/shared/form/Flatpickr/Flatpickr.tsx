@@ -1,4 +1,4 @@
-// src\components\shared\form\Flatpickr\Flatpickr.tsx
+import { Persian, English } from "flatpickr/dist/l10n/fa";  // وارد کردن فارسی و انگلیسی
 import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback, useMemo, InputHTMLAttributes, HTMLAttributes } from "react";
 import flatpickr from "flatpickr";
 import moment from "jalali-moment";
@@ -7,7 +7,26 @@ import { FlatpickrProps, FlatpickrRef, hooks, callbacks } from "./types";
 import { formatAndSetValue } from "./utils";
 
 const toJalaliDate = (date: Date) => {
-  return moment(date).format("jYYYY/jMM/jDD"); 
+  return moment(date).format("jYYYY/jMM/jDD");
+};
+
+const getRangeSeparator = (instance: Instance) => {
+  return ((instance?.l10n as any)?.rangeSeparator as string) ?? " تا ";
+};
+
+const formatSelectedDates = (selectedDates: Date[], instance: Instance) => {
+  const mode = (instance?.config as any)?.mode;
+
+  if (mode === "range") {
+    const sep = getRangeSeparator(instance);
+
+    if (selectedDates.length === 0) return "";
+    if (selectedDates.length === 1) return toJalaliDate(selectedDates[0]);
+
+    return `${toJalaliDate(selectedDates[0])}${sep}${toJalaliDate(selectedDates[1])}`;
+  }
+
+  return selectedDates.length ? toJalaliDate(selectedDates[0]) : "";
 };
 
 const Flatpickr = forwardRef<FlatpickrRef, FlatpickrProps>((props, ref) => {
@@ -34,15 +53,26 @@ const Flatpickr = forwardRef<FlatpickrRef, FlatpickrProps>((props, ref) => {
   const elementRef = useRef<FlatpickrRef | null>(null);
   const fpRef = useRef<Instance | null>(null);
 
+  // **تخصیص locale** به طور صحیح
+  const locale = "fa";  // یا می‌توانید از context یا i18n استفاده کنید
+  const fpLocale = locale === "fa" ? Persian : English;
+
   const flatpickrOptions = useMemo(() => {
     return {
       ...options,
+      locale: fpLocale,  // ارسال locale به طور صحیح
       onChange: (selectedDates: Date[]) => {
-        const formattedDate = toJalaliDate(selectedDates[0]);
+        const inst = fpRef.current;
+        if (!inst) return;
+
+        const formattedDate = formatSelectedDates(selectedDates, inst);
+
         if (Array.isArray(onChange)) {
-          onChange.forEach((callback) => callback(selectedDates, formattedDate, fpRef.current!));
+          onChange.forEach((callback) =>
+            callback(selectedDates, formattedDate, inst)
+          );
         } else if (onChange) {
-          onChange(selectedDates, formattedDate, fpRef.current!);
+          onChange(selectedDates, formattedDate, inst);
         }
       },
       onOpen,
@@ -53,38 +83,37 @@ const Flatpickr = forwardRef<FlatpickrRef, FlatpickrProps>((props, ref) => {
       onValueUpdate,
       onDayCreate,
     };
-  }, [options, onChange, onOpen, onClose, onMonthChange, onYearChange, onReady, onValueUpdate, onDayCreate]);
-
-  useImperativeHandle(ref, () => {
-    if (elementRef.current) {
-      elementRef.current._flatpickr = fpRef.current || undefined;
-    }
-    return elementRef.current as FlatpickrRef;
-  });
+  }, [
+    options,
+    onChange,
+    onOpen,
+    onClose,
+    onMonthChange,
+    onYearChange,
+    onReady,
+    onValueUpdate,
+    onDayCreate,
+  ]);
 
   const initFlatpickr = useCallback(() => {
-  if (!elementRef.current) return;
+    if (!elementRef.current) return;
 
-  try {
-    const instance = flatpickr(elementRef.current, flatpickrOptions) as Instance;
-    fpRef.current = instance;
+    try {
+      const instance = flatpickr(
+        elementRef.current,
+        flatpickrOptions
+      ) as Instance;
+      fpRef.current = instance;
 
-    if (value !== undefined && value !== "") {
-      formatAndSetValue(instance, value);
-    } else if (!value && !defaultValue) {
-      const today = new Date();
-      formatAndSetValue(instance, toJalaliDate(today)); 
-    } else if (defaultValue) {
-      formatAndSetValue(instance, defaultValue);
+      if (value !== undefined && value !== "") {
+        formatAndSetValue(instance, value);
+      } else if (defaultValue) {
+        formatAndSetValue(instance, defaultValue);
+      }
+    } catch (error) {
+      console.error("Error initializing flatpickr:", error);
     }
-
-    if (onCreate) {
-      onCreate(instance);
-    }
-  } catch (error) {
-    console.error("Error initializing flatpickr:", error);
-  }
-}, [flatpickrOptions, value, defaultValue, onCreate]);
+  }, [flatpickrOptions, value, defaultValue]);
 
   const destroyFlatpickr = useCallback(() => {
     if (fpRef.current) {
@@ -104,7 +133,7 @@ const Flatpickr = forwardRef<FlatpickrRef, FlatpickrProps>((props, ref) => {
         initFlatpickr();
       }
     },
-    [initFlatpickr],
+    [initFlatpickr]
   );
 
   useEffect(() => {
@@ -146,21 +175,20 @@ const Flatpickr = forwardRef<FlatpickrRef, FlatpickrProps>((props, ref) => {
       if (typeof defaultValue === "string") {
         const date = new Date(defaultValue);
         if (!isNaN(date.getTime())) {
-          return toJalaliDate(date); 
+          return toJalaliDate(date);
         }
       } else if (defaultValue instanceof Date) {
-        return toJalaliDate(defaultValue);  
+        return toJalaliDate(defaultValue);
       }
       return defaultValue || "";
     }
 
     if (fpRef.current) {
-      return toJalaliDate(fpRef.current.selectedDates[0]); 
+      return formatSelectedDates(fpRef.current.selectedDates, fpRef.current);
     }
 
     return value;
   }, [value, defaultValue]);
-
 
   const renderedValue = useMemo(() => getFormattedValue(), [getFormattedValue]);
 

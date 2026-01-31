@@ -1,3 +1,4 @@
+// src/app/services/companies/companies.api.ts
 import { authedHttp } from "@/app/services/authedHttp";
 import type {
   CompaniesListQuery,
@@ -29,7 +30,11 @@ export const companiesApi = {
       params: toQueryParams(query),
     }),
 
+  // ✅ GET /api/v1/companies/{id}
   getById: (id: UUID) => authedHttp.get<Company>(`/api/v1/companies/${id}`),
+
+  // ✅ optional alias (same endpoint) for clearer usage in UI
+  getOne: (id: UUID) => authedHttp.get<Company>(`/api/v1/companies/${id}`),
 
   update: (id: UUID, payload: UpdateCompanyPayload) =>
     authedHttp.patch<Company>(`/api/v1/companies/${id}`, payload),

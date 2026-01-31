@@ -27,5 +27,71 @@
       "documents": "المستندات",
       "archive": "الأرشيف / DMS"
     }
+  },
+  "support": {
+    "tickets": {
+      "detail": {
+        "title": "تذكرة",
+        "back": "رجوع",
+        "refresh": "تحديث",
+        "resolve": "تم الحل",
+        "close": "إغلاق التذكرة",
+        "reopen": "إعادة الفتح",
+        "loading": "جارٍ التحميل...",
+        "not_found": "لم يتم العثور على التذكرة",
+        "fields": {
+          "company": "الشركة",
+          "branch": "الفرع",
+          "category": "الفئة",
+          "requester": "مقدم الطلب",
+          "responder": "المجيب",
+          "description": "الوصف"
+        },
+        "status": {
+          "OPEN": "مفتوحة",
+          "IN_PROGRESS": "قيد المعالجة",
+          "RESOLVED": "تم الحل",
+          "CLOSED": "مغلقة"
+        },
+        "confirm": {
+          "resolve": {
+            "pending": "هل تريد تسجيل التذكرة كمحلولة؟",
+            "success": "تم حل التذكرة"
+          },
+          "close": {
+            "pending": "هل تريد إغلاق التذكرة؟",
+            "success": "تم إغلاق التذكرة"
+          },
+          "reopen": {
+            "pending": "هل تريد إعادة فتح التذكرة؟",
+            "success": "تمت إعادة فتح التذكرة"
+          }
+        },
+        "messages": {
+          "title": "الرسائل",
+          "new_message": "رسالة جديدة",
+          "placeholder": "نص الرسالة...",
+          "send": "إرسال",
+          "sent": "تم إرسال الرسالة",
+          "empty": "لا توجد رسائل."
+        },
+        "link_doc": {
+          "title": "ربط مستند",
+          "company_id_optional": "معرّف الشركة (اختياري)",
+          "branch_id_optional": "معرّف الفرع (اختياري)",
+          "document_id": "معرّف المستند",
+          "version_id_optional": "معرّف النسخة (اختياري)",
+          "required_document_id": "معرّف المستند مطلوب",
+          "success": "تم ربط المستند بنجاح",
+          "error": "خطأ في ربط المستند",
+          "button": "ربط"
+        },
+        "actions": {
+          "done": "تم تنفيذ العملية",
+          "error": "حدث خطأ أثناء العملية",
+          "detail_error": "خطأ في جلب تفاصيل التذكرة"
+        }
+      }
+    }
   }
 }

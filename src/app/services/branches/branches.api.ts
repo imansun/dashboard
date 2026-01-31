@@ -35,7 +35,11 @@ export const branchesApi = {
       params: toQueryParams(query),
     }),
 
+  // ✅ GET /api/v1/branches/{id}
   getById: (id: UUID) => authedHttp.get<Branch>(`/api/v1/branches/${id}`),
+
+  // ✅ optional alias (same endpoint) for clearer usage in UI
+  getOne: (id: UUID) => authedHttp.get<Branch>(`/api/v1/branches/${id}`),
 
   update: (id: UUID, payload: UpdateBranchPayload) =>
     authedHttp.patch<Branch>(`/api/v1/branches/${id}`, payload),

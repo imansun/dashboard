@@ -1,10 +1,10 @@
-// src\components\shared\form\Datepicker\Datepicker.tsx
+// src/components/shared/form/Datepicker/Datepicker.tsx
+
 // Import Dependencies
 import { CalendarIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import { forwardRef, useEffect, useRef, useMemo } from "react";
 import { BaseOptions } from "flatpickr/dist/types/options";
-// import Flatpickr from "react-flatpickr";
 import flatpickrCSS from "flatpickr/dist/themes/light.css?inline";
 
 // Local Imports
@@ -17,8 +17,6 @@ import {
 } from "@/utils/dom/injectStylesToHead";
 
 import { Flatpickr, FlatpickrProps, FlatpickrRef } from "../Flatpickr";
-import { Persian } from "./types";
-
 
 // ----------------------------------------------------------------------
 
@@ -52,17 +50,25 @@ const DatePicker = forwardRef<FlatpickrRef, DatePickerProps>(
       hasCalenderIcon = true,
       ...props
     },
-    ref,
+    ref
   ) => {
     const flatpickrRef = useRef<FlatpickrRef | null>(null);
 
-    const options = {
-      inline: isCalendar,
-      locale: Persian,
-      dateFormat: "Y/m/d", 
-      // plugin: [jalaliPlugin()],
+    const options: Partial<BaseOptions> = {
       ...userOptions,
+
+      inline: userOptions?.inline ?? isCalendar,
+
+      // ✅ دیگه Persian پیشفرض نیست؛ اگر صفحه‌ای locale بده همون استفاده میشه، وگرنه پیشفرض خود flatpickr
+      locale: userOptions?.locale ?? undefined,
+
+      // ✅ فرمت میلادی استاندارد
+      dateFormat: userOptions?.dateFormat ?? "Y-m-d",
+
+      // ✅ گارد سراسری: همه plugins خاموش (حتی اگر صفحات plugins بدن)
+      plugins: [],
     };
+
     const mergedRef = useMergedRef(flatpickrRef, ref);
 
     useEffect(() => {
@@ -89,7 +95,7 @@ const DatePicker = forwardRef<FlatpickrRef, DatePickerProps>(
           />
         );
       },
-      [isCalendar, hasCalenderIcon, userOptions?.inline],
+      [isCalendar, hasCalenderIcon, userOptions?.inline]
     );
 
     return (
@@ -101,7 +107,7 @@ const DatePicker = forwardRef<FlatpickrRef, DatePickerProps>(
         render={renderComponent}
       />
     );
-  },
+  }
 );
 
 export { DatePicker };

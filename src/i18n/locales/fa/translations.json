@@ -8,6 +8,7 @@
       "settings": "تنظیمات",
       "general": "عمومی",
       "appearance": "ظاهر",
+      "users": "کاربران",
       "rbac": "مدیریت نقش‌ها (RBAC)"
     },
     "support": {
@@ -17,15 +18,89 @@
       "companies": "شرکت‌ها",
       "branches": "شعبه‌ها",
       "categories": "دسته‌بندی‌ها",
-      "sla_policies": "SLA Policies"
+      "sla_policies": "سیاست‌های SLA"
     },
     "apps": {
       "apps": "اپلیکیشن‌ها",
       "filemanager": "مدیریت فایل"
     },
+    "archive": {
+      "archive": "بایگانی",
+      "list": "لیست بایگانی"
+    },
     "documents": {
       "documents": "اسناد",
-      "archive": "آرشیو / DMS"
+      "manage": "مدیریت",
+      "list": "لیست اسناد",
+      "folders": "پوشه‌ها",
+      "archive": "آرشیو / DMS",
+      "dms": "مدیریت اسناد"
+    }
+  },
+  "support": {
+    "tickets": {
+      "detail": {
+        "title": "تیکت",
+        "back": "بازگشت",
+        "refresh": "بروزرسانی",
+        "resolve": "حل شد",
+        "close": "بستن تیکت",
+        "reopen": "بازگشایی مجدد",
+        "loading": "در حال دریافت...",
+        "not_found": "تیکت پیدا نشد",
+        "fields": {
+          "company": "شرکت",
+          "branch": "واحد",
+          "category": "دسته‌بندی",
+          "requester": "درخواست‌کننده",
+          "responder": "پاسخ‌دهنده",
+          "description": "توضیحات"
+        },
+        "status": {
+          "OPEN": "باز",
+          "IN_PROGRESS": "در حال بررسی",
+          "RESOLVED": "حل شده",
+          "CLOSED": "بسته شده"
+        },
+        "confirm": {
+          "resolve": {
+            "pending": "تیکت حل‌شده ثبت شود؟",
+            "success": "تیکت حل شد"
+          },
+          "close": {
+            "pending": "تیکت بسته شود؟",
+            "success": "تیکت بسته شد"
+          },
+          "reopen": {
+            "pending": "تیکت بازگشایی شود؟",
+            "success": "تیکت بازگشایی شد"
+          }
+        },
+        "messages": {
+          "title": "پیام‌ها",
+          "new_message": "پیام جدید",
+          "placeholder": "متن پیام...",
+          "send": "ارسال",
+          "sent": "پیام ارسال شد",
+          "empty": "پیامی وجود ندارد."
+        },
+        "link_doc": {
+          "title": "اتصال سند",
+          "company_id_optional": "شناسه شرکت (اختیاری)",
+          "branch_id_optional": "شناسه واحد (اختیاری)",
+          "document_id": "شناسه سند",
+          "version_id_optional": "شناسه نسخه (اختیاری)",
+          "required_document_id": "شناسه سند الزامی است",
+          "success": "سند با موفقیت متصل شد",
+          "error": "خطا در اتصال سند",
+          "button": "اتصال"
+        },
+        "actions": {
+          "done": "عملیات انجام شد",
+          "error": "خطا در انجام عملیات",
+          "detail_error": "خطا در دریافت جزئیات تیکت"
+        }
+      }
     }
   }
 }

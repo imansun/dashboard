@@ -22,6 +22,37 @@ const protectedRoutes: RouteObject = {
           index: true,
           element: <Navigate to="/dashboards/home" />,
         },
+
+        // ✅ Documents (Sideblock/DynamicLayout)
+        {
+          path: "/documents",
+          lazy: async () => ({
+            Component: (await import("@/app/pages/documents")).default,
+          }),
+        },
+        {
+          path: "/documents/folders",
+          lazy: async () => ({
+            Component: (await import("@/app/pages/documents/folders")).default,
+          }),
+        },
+
+        // ✅ Document detail (versions + upload new version)
+        {
+          path: "/documents/:id",
+          lazy: async () => ({
+            Component: (await import("@/app/pages/documents/detail")).default,
+          }),
+        },
+
+        // ✅ Archive (deleted docs + restore)
+        {
+          path: "/archive",
+          lazy: async () => ({
+            Component: (await import("@/app/pages/archive")).default,
+          }),
+        },
+
         {
           path: "dashboards",
           children: [
@@ -80,7 +111,8 @@ const protectedRoutes: RouteObject = {
             {
               path: "companies",
               lazy: async () => ({
-                Component: (await import("@/app/pages/support/companies")).default,
+                Component: (await import("@/app/pages/support/companies"))
+                  .default,
               }),
             },
 
@@ -96,7 +128,8 @@ const protectedRoutes: RouteObject = {
             {
               path: "categories",
               lazy: async () => ({
-                Component: (await import("@/app/pages/support/categories")).default,
+                Component: (await import("@/app/pages/support/categories"))
+                  .default,
               }),
             },
 

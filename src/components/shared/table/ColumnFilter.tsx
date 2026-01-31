@@ -1,4 +1,4 @@
-// src\components\shared\table\ColumnFilter.tsx
+// src/components/shared/table/ColumnFilter.tsx
 // Import Dependencies
 import {
   Listbox,
@@ -15,13 +15,22 @@ import { Column } from "@tanstack/react-table";
 // Local Imports
 import { Button, Checkbox, Input } from "@/components/ui";
 import { DatePicker } from "../form/Datepicker/Datepicker";
+import { DateRangeColumnFilter } from "@/app/pages/support/users/filters/DateRangeColumnFilter";
 
 // ----------------------------------------------------------------------
 
 export function ColumnFilter({ column }: { column: Column<any> }) {
   const columnFilterValue = column.getFilterValue() as any;
 
-  if (column.columnDef.filterColumn === "dateRange") {
+  const variant = (column.columnDef as any)?.meta?.filterVariant;
+
+  // ✅ New: dateRange via meta.filterVariant
+  if (variant === "dateRange") {
+    return <DateRangeColumnFilter column={column} />;
+  }
+
+  // (existing) backward-compatible: old switch using filterColumn
+  if ((column.columnDef as any).filterColumn === "dateRange") {
     return (
       <div className="[&_.suffix]:w-5">
         <DatePicker
@@ -60,7 +69,7 @@ export function ColumnFilter({ column }: { column: Column<any> }) {
     );
   }
 
-  if (column.columnDef.filterColumn === "numberRange") {
+  if ((column.columnDef as any).filterColumn === "numberRange") {
     return (
       <div className="flex gap-2">
         <Input
@@ -93,14 +102,14 @@ export function ColumnFilter({ column }: { column: Column<any> }) {
     );
   }
 
-  if (column.columnDef.filterColumn === "select") {
+  if ((column.columnDef as any).filterColumn === "select") {
     return (
       <Listbox
         as="div"
-        value={column.columnDef?.options?.filter(({ value }) =>
+        value={(column.columnDef as any)?.options?.filter(({ value }: any) =>
           columnFilterValue?.includes(value),
         )}
-        onChange={(list) => {
+        onChange={(list: any[]) => {
           column.setFilterValue(list.map((item) => item.value));
         }}
         multiple
@@ -146,7 +155,7 @@ export function ColumnFilter({ column }: { column: Column<any> }) {
                 leaveTo="opacity-0 translate-y-2"
               >
                 <ListboxOptions className="text-xs-plus shadow-soft dark:border-dark-500 dark:bg-dark-750 absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-300 bg-white py-1 capitalize outline-hidden focus-visible:outline-hidden dark:shadow-none">
-                  {column?.columnDef?.options?.map((item) => (
+                  {(column?.columnDef as any)?.options?.map((item: any) => (
                     <ListboxOption
                       key={item.value}
                       className={({ focus }) =>
@@ -160,9 +169,7 @@ export function ColumnFilter({ column }: { column: Column<any> }) {
                       {({ selected }) => (
                         <div className="flex items-center justify-between gap-2">
                           <Checkbox checked={selected} readOnly />
-                          {item.icon && (
-                            <item.icon className="size-4.5 stroke-1" />
-                          )}
+                          {item.icon && <item.icon className="size-4.5 stroke-1" />}
                           <span className="block truncate">{item.label}</span>
                         </div>
                       )}
@@ -176,6 +183,7 @@ export function ColumnFilter({ column }: { column: Column<any> }) {
       </Listbox>
     );
   }
+
   return (
     <Input
       type="text"
