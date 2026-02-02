@@ -1,5 +1,6 @@
 // src/app/pages/support/tickets/detail/index.tsx
 import clsx from "clsx";
+import moment from "jalali-moment";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
@@ -18,6 +19,10 @@ import {
   TagIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
+import {
+  UserIcon as UserIconSolid,
+  LifebuoyIcon,
+} from "@heroicons/react/24/solid";
 import { useTranslation } from "react-i18next";
 
 import { Page } from "@/components/shared/Page";
@@ -35,7 +40,11 @@ import { ConfirmModal, type ModalState } from "@/components/shared/ConfirmModal"
 import { useThemeContext } from "@/app/contexts/theme/context";
 
 import { ticketsApi } from "@/app/services/tickets/tickets.api";
-import type { Ticket, TicketMessage, TicketStatus } from "@/app/services/tickets/tickets.types";
+import type {
+  Ticket,
+  TicketMessage,
+  TicketStatus,
+} from "@/app/services/tickets/tickets.types";
 
 import { usersApi } from "@/app/services/users/users.api";
 import { companiesApi } from "@/app/services/companies/companies.api";
@@ -45,12 +54,27 @@ import { categoriesApi } from "@/app/services/categories/categories.api";
 // ----------------------------------------------------------------------
 // UI Helpers
 
-function StatusBadge({ value, t }: { value: TicketStatus; t: (k: string) => string }) {
+function StatusBadge({
+  value,
+  t,
+}: {
+  value: TicketStatus;
+  t: (k: string) => string;
+}) {
   const map: Record<TicketStatus, { label: string; color: any }> = {
     OPEN: { label: t("support.tickets.detail.status.OPEN"), color: "primary" },
-    IN_PROGRESS: { label: t("support.tickets.detail.status.IN_PROGRESS"), color: "warning" },
-    RESOLVED: { label: t("support.tickets.detail.status.RESOLVED"), color: "success" },
-    CLOSED: { label: t("support.tickets.detail.status.CLOSED"), color: "neutral" },
+    IN_PROGRESS: {
+      label: t("support.tickets.detail.status.IN_PROGRESS"),
+      color: "warning",
+    },
+    RESOLVED: {
+      label: t("support.tickets.detail.status.RESOLVED"),
+      color: "success",
+    },
+    CLOSED: {
+      label: t("support.tickets.detail.status.CLOSED"),
+      color: "neutral",
+    },
   };
 
   const meta = map[value] ?? { label: String(value), color: "neutral" };
@@ -69,6 +93,24 @@ function StatusBadge({ value, t }: { value: TicketStatus; t: (k: string) => stri
 
 type ActionKind = "resolve" | "close" | "reopen";
 
+function getMessageAuthorId(m: any) {
+  return (
+    (m?.author_id != null ? String(m.author_id) : "") ||
+    (m?.sender_id != null ? String(m.sender_id) : "") ||
+    (m?.user_id != null ? String(m.user_id) : "")
+  );
+}
+
+function formatJalaliDateTime(input?: any) {
+  if (!input) return "—";
+
+  const m = moment(input);
+  if (!m.isValid()) return "—";
+
+  // نمونه خروجی: ۱۴۰۴/۱۱/۱۱ - ۱۴:۲۳
+  return m.locale("fa").format("jYYYY/jMM/jDD - HH:mm");
+}
+
 // ----------------------------------------------------------------------
 // Page
 
@@ -83,7 +125,9 @@ export default function TicketDetailPage() {
   const companiesMapRef = useRef(new Map<string, { id: string; name: string }>());
   const branchesMapRef = useRef(new Map<string, { id: string; name: string }>());
   const categoriesMapRef = useRef(new Map<string, { id: string; name: string }>());
-  const usersMapRef = useRef(new Map<string, { id: string; email?: string; name?: string }>());
+  const usersMapRef = useRef(
+    new Map<string, { id: string; email?: string; name?: string }>(),
+  );
 
   const [, bumpLookups] = useState(0);
   const bump = () => bumpLookups((x) => x + 1);
@@ -177,6 +221,45 @@ export default function TicketDetailPage() {
     }
   }, []);
 
+  const prefetchMessageAuthors = useCallback(
+    async (msgs: TicketMessage[]) => {
+      if (!msgs?.length) return;
+
+      const ids = new Set<string>();
+      for (const m of msgs) {
+        const uid = getMessageAuthorId(m as any);
+        if (uid) ids.add(uid);
+      }
+
+      const tasks: Promise<any>[] = [];
+      for (const uid of ids) {
+        if (!uid) continue;
+        if (usersMapRef.current.has(uid)) continue;
+
+        tasks.push(
+          usersApi
+            .getById(uid)
+            .then((res: any) => {
+              const data = res?.data ?? res;
+              if (data?.id)
+                usersMapRef.current.set(String(data.id), {
+                  id: String(data.id),
+                  email: data.email,
+                  name: data.name,
+                });
+            })
+            .catch(() => void 0),
+        );
+      }
+
+      if (tasks.length) {
+        await Promise.allSettled(tasks);
+        bump();
+      }
+    },
+    [], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
   const lookups = useMemo(
     () => ({
       companies: companiesMapRef.current,
@@ -213,6 +296,24 @@ export default function TicketDetailPage() {
     };
   }, [actionKind, t]);
 
+  // ✅ derived responder id (fallback from messages if ticket.responder_id is empty)
+  const derivedResponderId = useMemo(() => {
+    const tid = ticket?.responder_id ? String(ticket.responder_id) : "";
+    if (tid) return tid;
+
+    const requesterId = ticket?.requester_id ? String(ticket.requester_id) : "";
+    if (!messages?.length) return "";
+
+    for (const m of messages) {
+      const aid = getMessageAuthorId(m as any);
+      if (!aid) continue;
+      if (requesterId && aid === requesterId) continue; // پیام‌های درخواست‌کننده
+      return aid; // اولین نفری که requester نیست => responder
+    }
+
+    return "";
+  }, [ticket?.responder_id, ticket?.requester_id, messages]);
+
   const refetch = useCallback(async () => {
     if (!ticketId) return;
 
@@ -224,8 +325,12 @@ export default function TicketDetailPage() {
       ]);
 
       setTicket(tix);
-      setMessages(m.items || []);
+
+      const nextMessages = m.items || [];
+      setMessages(nextMessages);
+
       prefetchLookups(tix).catch(() => void 0);
+      prefetchMessageAuthors(nextMessages).catch(() => void 0);
 
       if (tix?.company_id && !docCompanyId) setDocCompanyId(String(tix.company_id));
       if (tix?.branch_id && !docBranchId) setDocBranchId(String(tix.branch_id));
@@ -234,7 +339,14 @@ export default function TicketDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [ticketId, docCompanyId, docBranchId, prefetchLookups, t]);
+  }, [
+    ticketId,
+    docCompanyId,
+    docBranchId,
+    prefetchLookups,
+    prefetchMessageAuthors,
+    t,
+  ]);
 
   useEffect(() => {
     refetch();
@@ -286,7 +398,8 @@ export default function TicketDetailPage() {
 
   const linkDoc = async () => {
     const docId = documentId.trim();
-    if (!docId) return toast.error(t("support.tickets.detail.link_doc.required_document_id"));
+    if (!docId)
+      return toast.error(t("support.tickets.detail.link_doc.required_document_id"));
 
     setLinking(true);
     try {
@@ -332,6 +445,7 @@ export default function TicketDetailPage() {
           loading={loading}
           lookups={lookups}
           userLabel={userLabel}
+          derivedResponderId={derivedResponderId}
         />
 
         <div className="my-5 h-px bg-gray-200 dark:bg-dark-500" />
@@ -346,6 +460,13 @@ export default function TicketDetailPage() {
               onChange={setBody}
               onSend={sendMessage}
               sending={sending}
+              usersLookup={lookups.users}
+              requesterId={
+                ticket?.requester_id ? String(ticket.requester_id) : undefined
+              }
+              responderId={
+                ticket?.responder_id ? String(ticket.responder_id) : undefined
+              }
             />
           </div>
 
@@ -411,7 +532,11 @@ function TicketHeader(props: {
           onClick={props.onResolve}
           disabled={props.disabled || busy}
         >
-          {isActive ? <GhostSpinner className="size-4 border-2" /> : <CheckCircleIcon className="size-5" />}
+          {isActive ? (
+            <GhostSpinner className="size-4 border-2" />
+          ) : (
+            <CheckCircleIcon className="size-5" />
+          )}
           <span>{props.t("support.tickets.detail.resolve")}</span>
         </Button>
       );
@@ -426,7 +551,11 @@ function TicketHeader(props: {
           onClick={props.onClose}
           disabled={props.disabled || busy}
         >
-          {isActive ? <GhostSpinner className="size-4 border-2" /> : <XMarkIcon className="size-5" />}
+          {isActive ? (
+            <GhostSpinner className="size-4 border-2" />
+          ) : (
+            <XMarkIcon className="size-5" />
+          )}
           <span>{props.t("support.tickets.detail.close")}</span>
         </Button>
       );
@@ -440,7 +569,11 @@ function TicketHeader(props: {
         onClick={props.onReopen}
         disabled={props.disabled || busy}
       >
-        {isActive ? <GhostSpinner className="size-4 border-2" /> : <ArrowUturnLeftIcon className="size-5" />}
+        {isActive ? (
+          <GhostSpinner className="size-4 border-2" />
+        ) : (
+          <ArrowUturnLeftIcon className="size-5" />
+        )}
         <span>{props.t("support.tickets.detail.reopen")}</span>
       </Button>
     );
@@ -525,24 +658,31 @@ function TicketSummary(props: {
     users: Map<string, { id: string; email?: string; name?: string }>;
   };
   userLabel: (u?: { name?: string; email?: string }) => string;
+  derivedResponderId?: string;
 }) {
   const { ticket, loading, cardSkin, lookups, userLabel, t } = props;
 
-  const companyName = ticket?.company_id ? lookups.companies.get(String(ticket.company_id))?.name : undefined;
-  const branchName = ticket?.branch_id ? lookups.branches.get(String(ticket.branch_id))?.name : undefined;
-  const categoryName = ticket?.category_id ? lookups.categories.get(String(ticket.category_id))?.name : undefined;
+  const companyName = ticket?.company_id
+    ? lookups.companies.get(String(ticket.company_id))?.name
+    : undefined;
+  const branchName = ticket?.branch_id
+    ? lookups.branches.get(String(ticket.branch_id))?.name
+    : undefined;
+  const categoryName = ticket?.category_id
+    ? lookups.categories.get(String(ticket.category_id))?.name
+    : undefined;
 
-  const requester = ticket?.requester_id ? lookups.users.get(String(ticket.requester_id)) : undefined;
-  const responder = ticket?.responder_id ? lookups.users.get(String(ticket.responder_id)) : undefined;
+  const requester = ticket?.requester_id
+    ? lookups.users.get(String(ticket.requester_id))
+    : undefined;
+
+  const responderId =
+    ticket?.responder_id ? String(ticket.responder_id) : props.derivedResponderId;
+
+  const responder = responderId ? lookups.users.get(responderId) : undefined;
 
   return (
-    <Card
-      className={clsx(
-        "rounded-2xl",
-        cardSkin === "shadow" ? "" : "",
-        "p-4 sm:px-5",
-      )}
-    >
+    <Card className={clsx("rounded-2xl", cardSkin === "shadow" ? "" : "", "p-4 sm:px-5")}>
       {ticket ? (
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -626,8 +766,11 @@ function TicketMessages(props: {
   onSend: () => void;
   sending: boolean;
   cardSkin: any;
+  usersLookup: Map<string, { id: string; email?: string; name?: string }>;
+  requesterId?: string;
+  responderId?: string;
 }) {
-  const { messages, value, onChange, onSend, sending, t } = props;
+  const { messages, value, onChange, onSend, sending, t, usersLookup } = props;
 
   return (
     <Card className="rounded-2xl p-4 sm:px-5">
@@ -650,7 +793,15 @@ function TicketMessages(props: {
         >
           <div className="flex flex-col gap-3">
             {messages.length ? (
-              messages.map((m) => <MessageItem key={m.id} message={m} />)
+              messages.map((m) => (
+                <MessageItem
+                  key={m.id}
+                  message={m}
+                  usersLookup={usersLookup}
+                  requesterId={props.requesterId}
+                  responderId={props.responderId}
+                />
+              ))
             ) : (
               <div className="py-6 text-center text-sm text-gray-500 dark:text-dark-200">
                 {t("support.tickets.detail.messages.empty")}
@@ -691,18 +842,77 @@ function TicketMessages(props: {
   );
 }
 
-function MessageItem({ message }: { message: TicketMessage }) {
+function MessageItem({
+  message,
+  usersLookup,
+  requesterId,
+  responderId,
+}: {
+  message: TicketMessage;
+  usersLookup: Map<string, { id: string; email?: string; name?: string }>;
+  requesterId?: string;
+  responderId?: string;
+}) {
+  const authorId = getMessageAuthorId(message as any);
+  const author = authorId ? usersLookup.get(authorId) : undefined;
+  const authorLabel = author?.name || author?.email || authorId || "—";
+
+  const isRequester = !!authorId && !!requesterId && authorId === requesterId;
+  const isResponder = !!authorId && !!responderId && authorId === responderId;
+
+  const roleMeta = isResponder
+    ? {
+        label: "پاسخ‌دهنده",
+        color: "success" as const,
+        icon: <LifebuoyIcon className="size-4" />,
+        bubble: "bg-primary-600 text-white dark:bg-primary-500",
+      }
+    : isRequester
+      ? {
+          label: "درخواست‌کننده",
+          color: "primary" as const,
+          icon: <UserIconSolid className="size-4" />,
+          bubble: "bg-gray-100 text-gray-800 dark:bg-dark-700 dark:text-dark-50",
+        }
+      : {
+          label: "کاربر",
+          color: "neutral" as const,
+          icon: <UserIconSolid className="size-4" />,
+          bubble: "bg-gray-100 text-gray-800 dark:bg-dark-700 dark:text-dark-50",
+        };
+
+  // چینش چت: responder سمت راست، requester سمت چپ (RTL هم درست می‌ایسته)
+  const alignClass = isResponder ? "items-end" : "items-start";
+  const rowJustify = isResponder ? "justify-end" : "justify-start";
+
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-3 dark:border-dark-500 dark:bg-dark-900">
-      <div className="flex items-center justify-between gap-2">
-        <Badge variant="soft" className="rounded-full px-3">
-          <span className="text-xs">{message.sender_id ?? "—"}</span>
+    <div className={clsx("flex flex-col gap-1", alignClass)}>
+      <div className={clsx("flex w-full items-center gap-2", rowJustify)}>
+        <Badge
+          variant="soft"
+          color={roleMeta.color}
+          className="gap-2 rounded-full border border-this-darker/20 px-3 dark:border-this-lighter/20"
+        >
+          {roleMeta.icon}
+          <span className="text-xs">{roleMeta.label}</span>
         </Badge>
-        <span className="text-xs text-gray-500 dark:text-dark-200">{message.created_at}</span>
+
+        <Badge variant="soft" className="rounded-full px-3">
+          <span className="text-xs">{authorLabel}</span>
+        </Badge>
+
+        <span className="text-xs text-gray-500 dark:text-dark-200">
+          {formatJalaliDateTime((message as any).created_at)}
+        </span>
       </div>
 
-      <div className="mt-2 whitespace-pre-line text-sm text-gray-700 dark:text-dark-100">
-        {message.body}
+      <div
+        className={clsx(
+          "max-w-[90%] rounded-2xl px-3 py-2 text-sm leading-6",
+          roleMeta.bubble,
+        )}
+      >
+        <div className="whitespace-pre-line">{(message as any).body}</div>
       </div>
     </div>
   );
@@ -735,7 +945,9 @@ function TicketLinkDoc(props: {
 
       <p className="mt-3 text-xs text-gray-500 dark:text-dark-200">
         {t("support.tickets.detail.link_doc.document_id")}{" "}
-        {t("support.tickets.detail.link_doc.required_document_id").includes("الزامی") ? "" : "*"}
+        {t("support.tickets.detail.link_doc.required_document_id").includes("الزامی")
+          ? ""
+          : "*"}
       </p>
 
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -769,7 +981,11 @@ function TicketLinkDoc(props: {
           onClick={props.onLink}
           disabled={props.linking || !props.documentId.trim()}
         >
-          {props.linking ? <GhostSpinner className="size-4 border-2" /> : <LinkIcon className="size-5" />}
+          {props.linking ? (
+            <GhostSpinner className="size-4 border-2" />
+          ) : (
+            <LinkIcon className="size-5" />
+          )}
           <span>{t("support.tickets.detail.link_doc.button")}</span>
         </Button>
       </div>
